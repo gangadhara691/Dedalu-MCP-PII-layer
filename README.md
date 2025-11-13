@@ -1,13 +1,13 @@
 Dedalu Labs SDK Quickstart
 ==========================
 
-This repo provisions a `dedalu` virtual environment with the `dedalus-labs` SDK preinstalled and provides two runnable examples that mirror the official quick-start snippets.
+This repo provisions a `dedalu` virtual environment with the `dedalus-labs` SDK preinstalled and provides runnable examples that mirror the official quick-start snippets.
 
 Prerequisites
 -------------
 
 * Python 3.11+
-* A Dedalus API key stored in an `.env` file (see below)
+* Dedalus API key stored in an `.env` file (see below)
 
 Environment Setup
 -----------------
@@ -18,7 +18,7 @@ python -m venv dedalu
 pip install -r requirements.txt
 ```
 
-> A pre-built `dedalu` environment already lives in this repo. Recreate it with the commands above if needed.
+> A pre-built `dedalu` virtual environment already exists here. Recreate it with the commands above if needed.
 
 Configuration
 -------------
@@ -34,12 +34,39 @@ Examples
 
 * `hello_world.py` – minimal chat completion against `openai/gpt-5-mini`
 * `data_analyst_agent.py` – multi-tool agent that streams responses while hitting Brave Search MCP
+* `secure_pii_service.py` & `mcp_tool_adapter.py` – stateful PII vault surfaced as a stateless Dedalus MCP tool
 
-Running either script:
+Running the quick-start scripts:
 
 ```powershell
 .\dedalu\Scripts\python hello_world.py
 .\dedalu\Scripts\python data_analyst_agent.py
 ```
 
-Both scripts automatically load `.env`, so your API key never leaves local config.
+Testing the trust layer:
+
+```powershell
+.\dedalu\Scripts\python -m pytest
+```
+
+PII Protection Architecture
+---------------------------
+
+The `secure_pii_service.py` / `mcp_tool_adapter.py` pair demonstrates how to wrap a stateful, on-prem vault behind a stateless Dedalus MCP adapter:
+
+1. Launch the FastAPI vault so it can store per-session placeholder maps:
+   ```powershell
+   .\dedalu\Scripts\python secure_pii_service.py
+   ```
+2. In a new shell, run the MCP proxy so Dedalus agents can access the vault via `sanitize`/`rehydrate` tools:
+   ```powershell
+   .\dedalu\Scripts\python mcp_tool_adapter.py
+   ```
+3. Register those tools with your Dedalus runner and pass a shared `session_id`. The runner calls `sanitize` before sending data to any untrusted LLM and `rehydrate` on the way back, keeping raw PII confined to the secure service.
+
+Why this becomes the next AI trust layer
+----------------------------------------
+
+* **Stateful privacy boundary:** Sensitive placeholder→real mappings never leave `secure_pii_service.py`, yet the Dedalus agent remains stateless and compliant with MCP requirements.
+* **Composable security:** Any agent—legal, finance, healthcare—can bolt on the MCP proxy without changing downstream tools. Only sanitized text reaches cloud LLMs.
+* **Provable behavior:** Automated pytest coverage (`tests/test_secure_pii_service.py`) exercises the sanitize/rehydrate round-trip so adopters can verify correctness before integrating in regulated workflows.
