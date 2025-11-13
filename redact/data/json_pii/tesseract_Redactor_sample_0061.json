@@ -1,0 +1,14 @@
+{
+  "full_name": "古川 幸助 (Kugawa Yoshiaki)",
+  "company_name": "株式会社アルファドライブ (Kabushiki Kaisha Alpha Drive Co., Ltd.)",
+  "address": "東京都港区三田 1-4-28 三田国際ビル (Minato Higashi-ku Minato International Building)",
+  "phone_number": "03-3452-1111",
+  "employment_details": {
+    "employment_start_date": "令和7年11月1日",
+    "employment_end_date": "令和8年10月31日",
+    "employment_location": "本社 (上記所在地)",
+    "休日": "土日祝・年末年始",
+    "月給": "320,000円 (通勤実費上限30,000円)",
+    "時間外労働割増率": "25% (月60時間超50%、法定35%、深夜25%)"
+  }
+}

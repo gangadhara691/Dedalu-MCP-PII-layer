@@ -1,0 +1,8 @@
+Here are the identified Personal Identifiable Information from the provided Japanese legal contract:
+
+1. **氏名 (Personal Name)**: イワン・ポポフ (Iwan Popov)
+2. **会社名 (Company Name)**: 株式会社アース・クリエイト (Earth Creative Co., Ltd.)
+3. **電話番号 (Phone Number)**: 092-475-8001
+4. **住所 (Address)**: 福岡県福岡市博多区博多駅中央街 1-1 JR 博多シティ (Fukuoka Prefecture Fukuoka City Bota Station Central Street 1-1 Bota City)
+
+Note: The address includes a Japanese term "JR博多シティ" which refers to a specific location within the city, but it is not a direct personal identifiable information. However, if this were to be considered, it could be inferred as a reference to a specific workplace location which might indirectly relate to the individual involved. For strict extraction based on personal identifiers, the first three items are primary.

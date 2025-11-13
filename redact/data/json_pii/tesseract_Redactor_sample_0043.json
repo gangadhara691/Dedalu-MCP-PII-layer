@@ -1,0 +1,12 @@
+{
+  "full_name": "岩崎健",
+  "company_name": "岩崎健社 (岩崎健株式会社)",
+  "address": "東京都中央区銀座 6-10-1 GINZA SIX",
+  "phone_number": "03-6891-3334",
+  "employment_contract_details": {
+    "contract_start_date": "2024年1月1日",
+    "contract_end_date": "2024年12月31日",
+    "salary_base": "月給 350,000円",
+    "salary_adjustment_period": "試用期間中330,000円"
+  }
+}

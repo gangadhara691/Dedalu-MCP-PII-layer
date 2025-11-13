@@ -1,0 +1,9 @@
+1. **氏名**: ダニエル・リベラスカイネット
+2. **会社名**: ダニエル・リベラスカイネット・ロジスティクス
+3. **電話番号**: 06-6372-6790
+4. **Person Names**: 氏名 (Daniiru Riberasuka)
+5. **Company Names**: ダニエル・リベラスカイネット・ロジスティクス (自身の会社名)
+6. **Address**: 大深町 3-1 グランフロント大阪06-6372-6790 大阪府大阪市北区
+7. **Phone Numbers**: 03-6-6372-6790 (電話番号は複数記載されていますが、4つに抽出します)
+
+Note: The extraction of phone numbers is limited to four distinct entries as per the request.

@@ -1,0 +1,19 @@
+{
+  "full_name": "福田 隼人",
+  "company_name": "オーシャン・キャビタル・パートナーズ",
+  "address": "東京都千代田区丸の内 2-6-1 丸の内プリックスクエア",
+  "phone_number": "03-3211-8800",
+  "emergency_contact": {
+    "name": "福田 隼人",
+    "relationship": "配偶者",
+    "phone_number": "03-3211-8800",
+    "address": "東京都千代田区丸の内 2-6-1 丸の内プリックスクエア"
+  },
+  "company_terms": "会社の定める関連業務10役職",
+  "emergency_contact_details": {
+    "name": "福田 隼人",
+    "relationship": "配偶者",
+    "phone_number": "03-3211-8800",
+    "address": "東京都千代田区丸の内 2-6-1 丸の内プリックスクエア"
+  }
+}

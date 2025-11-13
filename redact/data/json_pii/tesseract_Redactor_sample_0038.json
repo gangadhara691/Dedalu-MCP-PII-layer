@@ -1,0 +1,27 @@
+{
+  "full_name": "小野恵子",
+  "company_name": "アーバンリサーチ株式会社会社",
+  "address": "大阪府大阪市西区南堀江 1-14-26 中澤唐木ビル",
+  "phone_number": "06-6536-2324",
+  "email": "",
+  "previous_employers": [
+    {
+      "employer_name": "アーバンリサーチ株式会社会社",
+      "employment_status": "雇用",
+      "start_date": "2023-03-15",
+      "end_date": "2023-06-30",
+      "job_title": "研究員",
+      "salary": "¥50,000",
+      "benefits": ""
+    },
+    {
+      "employer_name": "アーバンリサーチ株式会社会社",
+      "employment_status": "雇用",
+      "start_date": "2023-07-01",
+      "end_date": "2023-08-15",
+      "job_title": "データアナリスト",
+      "salary": "¥75,000",
+      "benefits": ""
+    }
+  ]
+}

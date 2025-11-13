@@ -1,0 +1,53 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{iftex}
+\ifLuaTeX
+  \usepackage{luatexja}
+  \usepackage{luatexja-fontspec}
+  \setmainjfont{Yu Mincho}
+  \newcommand{\BeginJP}{}\newcommand{\EndJP}{}
+\else\ifXeTeX
+  \usepackage{fontspec}
+  \usepackage{xeCJK}
+  \setCJKmainfont{Yu Mincho}
+  \newcommand{\BeginJP}{}\newcommand{\EndJP}{}
+\else
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{CJKutf8}
+  \newcommand{\BeginJP}{\begin{CJK}{UTF8}{min}}
+  \newcommand{\EndJP}{\end{CJK}}
+\fi\fi
+
+\usepackage[top=18mm,bottom=18mm,left=18mm,right=18mm]{geometry}
+\usepackage{array,tabularx}
+\renewcommand{\arraystretch}{1.25}
+\usepackage{pifont}
+\newcommand{\checked}{\ding{114}}
+\newcommand{\unchecked}{\ding{113}}
+
+\begin{document}
+\BeginJP
+\pagestyle{empty}
+
+\begin{flushright}令和7年10月11日\end{flushright}
+\begin{center}\Large\bfseries 雇用条件通知書（簡易）\end{center}
+
+% ---- 可変情報（1回のみ） ----
+\begin{tabularx}{\textwidth}{@{} >{\raggedright\arraybackslash}p{35mm} X @{}}
+氏名（フルネーム） & {{ surname }} {{ first_name }} \\
+会社名 & {{ company_name }} \\
+会社所在地 & {{ company_address }} \\
+勤務地（地名） & {{ place }} \\
+電話番号 & {{ phone_number }} \\
+\end{tabularx}
+\vspace{0.8em}
+
+雇用期間：令和7年11月1日 ～ 令和8年10月31日（更新の可能性あり）\\
+就業場所：本社（上記所在地）\\
+業務内容：産業機械の組立補助・検査\\
+就業時間：9:00～18:00（休憩60分）／ 休日：土日祝・年末年始\\
+賃 金：月給 320,000円（通勤 実費 上限30,000円）\\
+割増率：時間外 25％（月60h超 50％）、休日（法定）35％、深夜 25％
+
+\EndJP
+\end{document}

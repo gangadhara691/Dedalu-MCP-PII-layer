@@ -1,0 +1,8 @@
+Here are the identified Personal Identifiable Information from the provided Japanese legal contract:
+
+1. **個人名 (Full Name)**: アレクサンダー・シュミット (Alexander Schmidt)
+2. **会社名 (Company Name)**: ホライズン・コンサルティング (Horizon Consulting)
+3. **住所 (Address)**: 東京都港区六本木 6-10-1 六本木ヒルズ森タワー (Tokyo Harajuku Six本木 Huruzuru Moris Tower, 106-6150)
+4. **電話番号 (Phone Number)**: 03-6406-6001
+
+These details are extracted from the text provided in the Japanese Legal contract.

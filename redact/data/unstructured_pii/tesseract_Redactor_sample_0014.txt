@@ -1,0 +1,9 @@
+1. **氏名**: クロエ
+2. **会社名**: クロエ・ルコント会社名 (クロエ・ルコント)
+3. **電話番号**: 052-527-8888
+4. **個人情報**:
+   - 氏名: クロエ
+   - 会社名: クロエ・ルコント会社名
+   - 電話番号: 052-527-8888
+
+Note: The personal identifiable information extracted includes the full name, company name, and direct contact information.
