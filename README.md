@@ -1,17 +1,33 @@
-Dual‑LLM Trust Layer for Dedalus Agents
-======================================
+Dual LLM Trust Layer for Dedalus Agents
+=======================================
 
-This project shows how to run a fully working “dual LLM” security barrier: a quarantined LiquidAI judge handles unsafe input and a privileged Dedalus agent completes the business task. The pattern keeps sensitive prompts, PII, and tool commands inside a sandbox while exposing only sanitized text to the worker agent.
+This repo proves that Dedalus agents can stay fast and useful while a separate LLM firewall keeps the raw prompts, PII, and tool routing under control. The first LLM (LiquidAI on Hugging Face) sits in front of every Dedalus run, cleans the input, and only hands the worker agent the command set it is allowed to execute. The second LLM (your Dedalus workflow) stays blissfully unaware of real names or secrets.
 
-Concept
--------
+How the two LLMs split duties
+-----------------------------
 
-1. **LLM #1 – Judge (Quarantined layer).** `redact/judge_service.py` receives the original prompt, checks it for malicious intent, extracts/masks PII through a LiquidAI endpoint, and emits a structured command.
-2. **LLM #2 – Worker (Privileged layer).** Dedalus agents (`hello_world.py`, `data_analyst_agent.py`, etc.) call the judge through MCP tools (`mcp_tool_adapter.py`). They only see placeholders and whitelisted instructions, so the confused-deputy risk disappears.
+1. **LLM #1: Judge / Sandbox (`redact/judge_service.py`)**  
+   * Receives the exact user prompt.  
+   * Screens for prompt-injection attempts.  
+   * Calls the LiquidAI endpoint to extract and mask PII.  
+   * Returns a JSON payload describing the masked text, placeholder map, and the action it wants the worker to perform.
 
-Expected outcome: a Dedalus agent can summarize or analyze any document containing PII without ever seeing the real names or raw prompt, while still delivering accurate results once the judge rehydrates the final answer.
+2. **LLM #2: Worker / Dedalus agent (`hello_world.py`, `data_analyst_agent.py`, your own flows)**  
+   * Talks to the judge through MCP tools defined in `mcp_tool_adapter.py`.  
+   * Only sees placeholders and the judge-approved command set.  
+   * Sends any final answer back through the same MCP adapter so the judge can rehydrate the placeholders before a user ever sees it.
 
-Environment Setup
+The MCP hook is the glue: the Dedalus runner registers `sanitize` and `rehydrate`, and the MCP call path proves you understand their stack end-to-end.
+
+What you get
+------------
+
+* Dedalus agents that can summarize or analyze PII-heavy docs without ever touching the raw identifiers.  
+* Tool access runs through the judge, so confused-deputy attacks have nowhere to land.  
+* Audit logs that mostly show placeholders, but can be rehydrated on demand.  
+* A clear drop-in story: keep your existing Dedalus code, add the MCP tool server, and point it at the judge.
+
+Environment setup
 -----------------
 
 ```powershell
@@ -20,61 +36,63 @@ python -m venv dedalu
 pip install -r requirements.txt
 ```
 
-Set the required secrets:
+Secrets and config:
 
 ```
 DEDALUS_API_KEY=sk-your-key
-HF_TOKEN=hf_xxx
-HF_ENDPOINT=https://<your-endpoint>.aws.endpoints.huggingface.cloud
-PII_BACKEND=remote        # switch to "offline" for local-only heuristics
+HF_TOKEN=hf_your_token
+HF_ENDPOINT=https://your-endpoint.aws.endpoints.huggingface.cloud
+PII_BACKEND=remote   # use "offline" to run without Hugging Face
 ```
 
 Running the stack
 -----------------
 
-1. **Start the judge service (LLM #1).**
+1. **Judge service (LLM #1).**
    ```powershell
    .\dedalu\Scripts\python -m uvicorn redact.judge_service:app --host 127.0.0.1 --port 9000
    ```
-2. **Inspect or batch local samples.**
+2. **Optional batch inspection.**
    ```powershell
    cd redact
    ..\dedalu\Scripts\python run_liquidai_pii.py --input data\txt\paddle_Redactor_sample_0002.txt --limit 1
    ```
-3. **Launch the MCP proxy for Dedalus (LLM #2).**
+3. **MCP proxy (bindings for Dedalus).**
    ```powershell
    $env:JUDGE_URL="http://127.0.0.1:9000"
    .\dedalu\Scripts\python mcp_tool_adapter.py
    ```
-4. **Register the MCP tools in your Dedalus runner** and run `hello_world.py` or `data_analyst_agent.py`. The runner calls `sanitize` before every tool invocation and `rehydrate` before returning a response, so the worker LLM never touches raw PII.
+4. **Dedalus runners.**  
+   Register the MCP tools with your Dedalus `AsyncDedalus` runner. The agent calls `sanitize` before any tool invocation and `rehydrate` before returning a response.
 
-Validation
-----------
+Validation checklist
+--------------------
 
-* `.\dedalu\Scripts\python -m pytest` exercises the sanitize/rehydrate flow (`tests/test_secure_pii_service.py`), the LiquidAI extractor (`tests/test_liquidai_pii.py`), and the judge heuristics (`tests/test_judge_service.py`).
-* `redact/run_liquidai_pii.py` confirms the LiquidAI endpoint produces masked text and JSON replacements for the included sample dataset.
+* `.\dedalu\Scripts\python -m pytest` covers the judge heuristics, LiquidAI masking logic, and the stateful sanitize/rehydrate flow.  
+* `redact/run_liquidai_pii.py` lets you point at specific `.txt` exports and see the exact JSON + masked text the judge will hand off.  
+* Dedalus quickstart scripts (`hello_world.py`, `data_analyst_agent.py`) continue to run, now with the MCP adapter in front of them.
 
-Project status
---------------
+Status and next steps
+---------------------
 
-**Completed**
+**Done**
 
-* Dual-LLM architecture (judge service + MCP adapter).
-* LiquidAI integration with both remote endpoints and offline heuristics.
-* Session-aware PII masking + rehydration.
-* Automated tests and usage docs.
+* Dual LLM architecture wired into Dedalus via MCP.  
+* LiquidAI endpoint client with fallback offline heuristics.  
+* Session-aware PII masking and rehydration.  
+* Tests and docs so others can reproduce the workflow.
 
-**In progress / planned**
+**Upcoming polish**
 
-* Automated deployment scripts for the judge layer (container + IaC).
-* Expanded intent-detector prompts using Llama Guard or OpenGuardrails.
-* Full Dedalus agent examples that log every sanitize/rehydrate event for auditing.
+* IaC/container scripts to deploy the judge automatically.  
+* Stronger intent vetting using Llama Guard or OpenGuardrails.  
+* Extended Dedalus tutorials with logging hooks for compliance teams.
 
-Roadmap ideas
--------------
+Ways to extend it
+-----------------
 
-1. **Stronger prompt vetting.** Plug a dedicated safety model into `judge_service.py` so intent checks move beyond simple heuristics.
-2. **Secrets vault integration.** Store PII mappings in an encrypted backend (DynamoDB, Postgres, etc.) so the judge becomes horizontally scalable.
-3. **Observability.** Add OpenTelemetry traces for every judge decision so SOC teams can monitor blocked vs. approved prompts.
+1. Drop in a secrets store (KMS, DynamoDB, Postgres) so judge state survives restarts.  
+2. Pipe judge decisions into OpenTelemetry for easy dashboards.  
+3. Swap the LiquidAI endpoint for another policy model if you want language coverage beyond JP/EN.
 
-Each enhancement only requires extending the judge service; the worker agents remain unchanged, which keeps the system easy to maintain and ready for enterprise showcases.
+All of those upgrades live in the judge layer; the Dedalus worker and MCP adapter already know how to consume whatever sanitized payload you decide to emit. That is the whole point of this project: Dedalus stays productive while a dedicated LLM sandbox keeps everything safe, visible, and under your control.
