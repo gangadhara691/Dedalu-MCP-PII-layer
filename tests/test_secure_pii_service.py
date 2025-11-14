@@ -46,3 +46,59 @@ def test_rehydrate_unknown_session() -> None:
     )
     assert response.status_code == 404
     assert response.json()["detail"] == "Unknown session_id"
+
+
+def test_sanitize_is_idempotent_for_known_pii() -> None:
+    pii_maps.clear()
+    session_id = "session-repeat"
+    text = "John Doe called John Doe again."
+
+    first = client.post(
+        "/sanitize", json={"session_id": session_id, "text": text}, timeout=5
+    ).json()["masked_text"]
+    second = client.post(
+        "/sanitize", json={"session_id": session_id, "text": text}, timeout=5
+    ).json()["masked_text"]
+
+    assert first == second
+    assert first.count("[PERSON_1]") == 2
+
+
+def test_sanitize_without_detectable_pii_returns_original_text() -> None:
+    pii_maps.clear()
+    payload = {"session_id": "session-none", "text": "Nothing sensitive here."}
+    response = client.post("/sanitize", json=payload, timeout=5)
+    data = response.json()
+    assert data["masked_text"] == payload["text"]
+    assert data["replacements"] == {}
+
+
+def test_session_isolation_between_clients() -> None:
+    pii_maps.clear()
+    first_masked = client.post(
+        "/sanitize",
+        json={"session_id": "session-a", "text": "John Doe works here."},
+        timeout=5,
+    ).json()["masked_text"]
+
+    second_masked = client.post(
+        "/sanitize",
+        json={"session_id": "session-b", "text": "John Doe works here."},
+        timeout=5,
+    ).json()["masked_text"]
+
+    assert first_masked == second_masked
+
+    rehydrated_a = client.post(
+        "/rehydrate",
+        json={"session_id": "session-a", "text": first_masked},
+        timeout=5,
+    ).json()["rehydrated_text"]
+    rehydrated_b = client.post(
+        "/rehydrate",
+        json={"session_id": "session-b", "text": second_masked},
+        timeout=5,
+    ).json()["rehydrated_text"]
+
+    assert rehydrated_a == "John Doe works here."
+    assert rehydrated_b == "John Doe works here."

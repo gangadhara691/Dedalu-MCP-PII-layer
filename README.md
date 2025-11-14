@@ -49,6 +49,8 @@ Testing the trust layer:
 .\dedalu\Scripts\python -m pytest
 ```
 
+> **Dedalus agent runs require credentials.** The hello-world and analyst examples expect a valid `DEDALUS_API_KEY` plus access to the referenced MCP servers. Without that configuration, Dedalus requests fail at authentication—highlighting exactly why the PII proxy is built to operate independently of the hosted Dedalus control plane.
+
 PII Protection Architecture
 ---------------------------
 
@@ -69,4 +71,4 @@ Why this becomes the next AI trust layer
 
 * **Stateful privacy boundary:** Sensitive placeholder→real mappings never leave `secure_pii_service.py`, yet the Dedalus agent remains stateless and compliant with MCP requirements.
 * **Composable security:** Any agent—legal, finance, healthcare—can bolt on the MCP proxy without changing downstream tools. Only sanitized text reaches cloud LLMs.
-* **Provable behavior:** Automated pytest coverage (`tests/test_secure_pii_service.py`) exercises the sanitize/rehydrate round-trip so adopters can verify correctness before integrating in regulated workflows.
+* **Provable behavior:** Automated pytest coverage (`tests/test_secure_pii_service.py`) now spans round-trips, idempotency, session isolation, and error handling so adopters can verify correctness before integrating in regulated workflows.
